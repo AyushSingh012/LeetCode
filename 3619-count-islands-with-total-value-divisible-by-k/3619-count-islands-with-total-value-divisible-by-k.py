@@ -1,19 +1,47 @@
 class Solution:
     def countIslands(self, grid: List[List[int]], k: int) -> int:
+
         m, n = len(grid), len(grid[0])
-        dirs = (-1, 0, 1, 0, -1)
+        stack = []
+        ans = 0
+        
+        for r in range(m):
+            for c in range(n):
+                if grid[r][c] == 0:
+                    continue
 
-        def dfs(i: int, j: int) -> int:
-            total = grid[i][j]
-            grid[i][j] = 0
-            for d in range(4):
-                x, y = i + dirs[d], j + dirs[d + 1]
-                if 0 <= x < m and 0 <= y < n and grid[x][y] > 0:
-                    total += dfs(x, y)
-            return total
+                total_val = grid[r][c]
+                grid[r][c] = 0
+                stack.append((r, c))
 
-        return sum(
-            grid[i][j] > 0 and dfs(i, j) % k == 0
-            for i in range(m)
-            for j in range(n)
-        )
+                while stack:
+                    row, col = stack.pop()
+
+                    new_row = row + 1
+                    if new_row != m and grid[new_row][col] != 0:
+                        stack.append((new_row, col))
+                        total_val += grid[new_row][col]
+                        grid[new_row][col] = 0
+
+                    new_row = row - 1
+                    if new_row != -1 and grid[new_row][col] != 0:
+                        stack.append((new_row, col))
+                        total_val += grid[new_row][col]
+                        grid[new_row][col] = 0
+
+                    new_col = col + 1
+                    if new_col != n and grid[row][new_col] != 0:
+                        stack.append((row, new_col))
+                        total_val += grid[row][new_col]
+                        grid[row][new_col] = 0
+
+                    new_col = col - 1
+                    if new_col != -1 and grid[row][new_col] != 0:
+                        stack.append((row, new_col))
+                        total_val += grid[row][new_col]
+                        grid[row][new_col] = 0
+
+                if total_val % k == 0:
+                    ans += 1
+
+        return ans
